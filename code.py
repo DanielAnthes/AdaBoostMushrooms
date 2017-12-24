@@ -13,7 +13,16 @@ Necessary imports
 import pandas as pa
 import numpy as np
 import matplotlib.pyplot as plt
-
+import DecisionTree as dt
 #%%
 
 data = pa.read_csv('Data/mushrooms.csv')
+y = data['class']                   #class
+X = data.iloc[:,range(1,23)]        #attributes
+
+attributes = X.columns.values
+X_arr = X.values
+y_arr = y.values
+
+tree = dt.DecisionTree(X_arr,y_arr)
+
