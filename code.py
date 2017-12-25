@@ -33,4 +33,9 @@ testy = np.array([0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3])
 #%%
 
 tree = dt.DecisionTree()
-tree.fitTree(X = testX, y = testy,max_depth = 4)
+tree.fitTree(X = X_arr, y = y_arr, max_depth = 4)
+
+#%%
+#testing
+tree.predict(X_arr[0])
+

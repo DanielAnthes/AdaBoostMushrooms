@@ -22,6 +22,7 @@ class DecisionTree:
         self.root = None
         
     def classify(self,y)  :
+        #TODO account for empty leaf nodes
         counter = Counter(y)
         return counter.most_common(1)[0][0]
     
@@ -30,7 +31,7 @@ class DecisionTree:
         #TODO improve by introducing early stopping
         #TODO improve by returning split indices
         num_entries, num_attr = X.shape
-        best_split = (None, None,1) #holds column, value to be split on and current lowest Gini
+        best_split = (None, None,999) #holds column, value to be split on and current lowest Gini
         #loop over all attributes
         for i in range(0,num_attr):
             currentBest = (None,None,1) #holds column, value to be split on and gini
@@ -50,7 +51,7 @@ class DecisionTree:
                 y2 = y[right_indices]
                 #compute gini
                 gini = (len(left_indices)/float(num_entries)) * self.gini(y1) + (len(right_indices)/float(num_entries)) * self.gini(y2) 
-                if currentBest[1] > gini:
+                if currentBest[2] > gini:
                     #update best condition
                     currentBest = (i,u,gini)
             #update overall best split
@@ -69,9 +70,11 @@ class DecisionTree:
         return 1 - helper
             
         
-    def stop(self, X,max_depth = None, minNodeSize = None):
+    def stop(self, X, y, max_depth = None, minNodeSize = None):
         #also stop if there is no more gain?
         size = len(X)
+        if self.gini(y) == 0:
+            return True
         if self.depth >= max_depth:
             return True
         
@@ -88,30 +91,29 @@ class DecisionTree:
         newNode = Node()
         if self.root == None: #in first step set root node
             self.root = newNode
-        if self.stop(X = X, max_depth = max_depth, minNodeSize = minNodeSize):
+        if self.stop(X = X, y = y, max_depth = max_depth, minNodeSize = minNodeSize):
             #create leaf node, assign classification
             leaf = newNode
-            leaf.classification = classify(X)
+            leaf.classification = self.classify(y)
             
         else:
             #create node, generate test condition
             self.depth += 1
             node = newNode
             node.splitCriteria = self.generateSplit(X,y)
-           
             indices_left  = list()
             indices_right = list()
             
             #generate binary split on condition: True is left child, False is right child
             for i in range(0,len(X)):
-                if node.condition(X[i]):
+                element = X[i]
+                if node.condition(element):
                     indices_left.append(i)
                 else:
                     indices_right.append(i)
-                    
             #recursively call fitTree for child nodes
-            node.left  = fitTree( X[indices_left], y[indices_left], max_depth, minNodeSize)
-            node.right = fitTree(X[indices_right], y[indices_right], max_depth, minNodeSize)
+            node.left  = self.fitTree( X[indices_left], y[indices_left], max_depth, minNodeSize)
+            node.right = self.fitTree(X[indices_right], y[indices_right], max_depth, minNodeSize)
     
     def predict(self, element):
         if self.root == None:
@@ -120,6 +122,7 @@ class DecisionTree:
         else:
             current = self.root
             while current.classification == None:
+                print('step')
                 if current.condition(element):
                     current = current.left
                 else:
