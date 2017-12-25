@@ -13,6 +13,7 @@ Takes data X as numpy array and y as list or array, currently the only purity me
 
 #%%
 from collections import Counter
+import numpy as np
 
 class DecisionTree:
     def __init__(self,purityMeasure='gini'):
@@ -48,7 +49,7 @@ class DecisionTree:
                 y1 = y[left_indices]
                 y2 = y[right_indices]
                 #compute gini
-                gini = (len(left_indices)/float(num_entries)) * gini(y1) + (len(right_indices)/float(num_entries)) * gini(y2) 
+                gini = (len(left_indices)/float(num_entries)) * self.gini(y1) + (len(right_indices)/float(num_entries)) * self.gini(y2) 
                 if currentBest[1] > gini:
                     #update best condition
                     currentBest = (i,u,gini)
@@ -57,7 +58,7 @@ class DecisionTree:
                 best_split = currentBest
         
         
-        return (bestSplit[0],bestSplit[1]) #returns column and value to be split on
+        return (best_split[0],best_split[1]) #returns column and value to be split on
         
     def gini(self,y):
         length = float(len(y))
@@ -68,7 +69,7 @@ class DecisionTree:
         return 1 - helper
             
         
-    def stop(self, X,max_depth,minNodeSize):
+    def stop(self, X,max_depth = None, minNodeSize = None):
         #also stop if there is no more gain?
         size = len(X)
         if self.depth >= max_depth:
@@ -87,7 +88,7 @@ class DecisionTree:
         newNode = Node()
         if self.root == None: #in first step set root node
             self.root = newNode
-        if stop(max_depth):
+        if self.stop(X = X, max_depth = max_depth, minNodeSize = minNodeSize):
             #create leaf node, assign classification
             leaf = newNode
             leaf.classification = classify(X)
@@ -96,7 +97,7 @@ class DecisionTree:
             #create node, generate test condition
             self.depth += 1
             node = newNode
-            node.splitCriteria = generateSplit(X,y)
+            node.splitCriteria = self.generateSplit(X,y)
            
             indices_left  = list()
             indices_right = list()

@@ -14,6 +14,7 @@ import pandas as pa
 import numpy as np
 import matplotlib.pyplot as plt
 import DecisionTree as dt
+
 #%%
 
 data = pa.read_csv('Data/mushrooms.csv')
@@ -24,5 +25,12 @@ attributes = X.columns.values
 X_arr = X.values
 y_arr = y.values
 
-tree = dt.DecisionTree(X_arr,y_arr)
+#%% test data
 
+testX = np.array([[0,0],[0,0],[0,0],[0,0],[0,1],[0,1],[0,1],[0,1],[1,0],[1,0],[1,0],[1,0],[1,1],[1,1],[1,1],[1,1]])
+testy = np.array([0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3])
+
+#%%
+
+tree = dt.DecisionTree()
+tree.fitTree(X = testX, y = testy,max_depth = 4)
