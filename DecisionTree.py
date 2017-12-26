@@ -88,6 +88,7 @@ class DecisionTree:
             return False
         
     def fitTree(self,X,y,max_depth = None,minNodeSize=None):
+        #TODO does not work properly without setting a max_depth
         newNode = Node()
         if self.root == None: #in first step set root node
             self.root = newNode
