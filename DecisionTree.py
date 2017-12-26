@@ -19,7 +19,7 @@ class DecisionTree:
     def __init__(self,purityMeasure='gini'):
         self.purity_measure = purityMeasure
         self.depth = 1
-        self.root = None
+        self.root = Node()
         
     def classify(self,y)  :
         #TODO account for empty leaf nodes
@@ -87,11 +87,14 @@ class DecisionTree:
         else:
             return False
         
-    def fitTree(self,X,y,max_depth = None,minNodeSize=None):
+    def fitTree(self,X,y, currNode = None,max_depth = None,minNodeSize=None):
         #TODO does not work properly without setting a max_depth
-        newNode = Node()
-        if self.root == None: #in first step set root node
-            self.root = newNode
+        #TODO Nodes are not added correctly!
+        #in first call get root Node
+        if currNode == None:
+            newNode = self.root
+        else:
+            newNode = currNode
         if self.stop(X = X, y = y, max_depth = max_depth, minNodeSize = minNodeSize):
             #create leaf node, assign classification
             leaf = newNode
@@ -113,8 +116,10 @@ class DecisionTree:
                 else:
                     indices_right.append(i)
             #recursively call fitTree for child nodes
-            node.left  = self.fitTree( X[indices_left], y[indices_left], max_depth, minNodeSize)
-            node.right = self.fitTree(X[indices_right], y[indices_right], max_depth, minNodeSize)
+            node.left  = Node()
+            self.fitTree( X[indices_left], y[indices_left], node.left, max_depth, minNodeSize)
+            node.right = Node()
+            self.fitTree(X[indices_right], y[indices_right], node.right, max_depth, minNodeSize)
     
     def predict(self, element):
         if self.root == None:

@@ -33,10 +33,10 @@ testy = np.array([0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3])
 #%%
 
 tree = dt.DecisionTree()
-tree.fitTree(X = X_arr, y = y_arr, max_depth = 100)
+tree.fitTree(X = testX, y = testy, max_depth = 100)
 tree.depth
 
 #%%
 #testing
-tree.predict(X_arr[0])
+print(tree.predict([1,1]))
 
