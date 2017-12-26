@@ -129,8 +129,9 @@ class DecisionTree:
         elif np.ndim(element) > 1:
             length = len(element)
             results = np.empty(length)
-            for i in length:
-                results[i] = predict(self, element[i])
+            for i in range(0,length):
+                e = element[i]
+                results[i] = self.predict(e)
             return results
 
         else:
