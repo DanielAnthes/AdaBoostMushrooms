@@ -125,6 +125,14 @@ class DecisionTree:
         if self.root == None:
             print("call fitTree first to generate tree")
             return None
+        #add support for classification of multiple elements at once
+        elif np.ndim(element) > 1:
+            length = len(element)
+            results = np.empty(length)
+            for i in length:
+                results[i] = predict(self, element[i])
+            return results
+
         else:
             current = self.root
             while current.classification == None:
