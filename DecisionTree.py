@@ -18,7 +18,7 @@ import numpy as np
 class DecisionTree:
     def __init__(self,purityMeasure='gini'):
         self.purity_measure = purityMeasure
-        self.depth = 1
+        self.depth = 0
         self.root = Node()
         
     def classify(self,y)  :
