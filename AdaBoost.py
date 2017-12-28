@@ -25,7 +25,7 @@ class AdaBoost:
 
     def __init__(self):
         self.classifiers = None
-        self.weights = None
+        self.csf_weights = None
         self.dict = None  # store translation between actual class names and {-1,1}
         # stuff I added
         self.alphas = None
@@ -67,7 +67,7 @@ class AdaBoost:
             return results
         else:
             numClassifiers = len(self.classifiers)
-            weightedClassifications = [c.predict(element) * w for (c, w) in zip(self.classifiers, self.weights)]
+            weightedClassifications = [c.predict(element) * w for (c, w) in zip(self.classifiers, self.csf_weights)]
             return (-1 if np.sum(weightedClassifications) < 0 else 1)
 
     # small functions for ada boost

@@ -2,11 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5dc22c84-c68a-42c2-9d6a-33cfa13c6f31" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
-      <change beforePath="$PROJECT_DIR$/.idea/AdaBoost.iml" afterPath="$PROJECT_DIR$/.idea/AdaBoost.iml" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/AdaBoost.py" afterPath="$PROJECT_DIR$/AdaBoost.py" />
-      <change beforePath="$PROJECT_DIR$/Console.py" afterPath="$PROJECT_DIR$/Console.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -20,8 +18,8 @@
       <file leaf-file-name="AdaBoost.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/AdaBoost.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="115">
-              <caret line="42" column="62" lean-forward="true" selection-start-line="42" selection-start-column="62" selection-end-line="42" selection-end-column="62" />
+            <state relative-caret-position="230">
+              <caret line="28" column="36" lean-forward="false" selection-start-line="28" selection-start-column="36" selection-end-line="28" selection-end-column="36" />
               <folding>
                 <element signature="e#530#548#0" expanded="true" />
               </folding>
@@ -162,6 +160,14 @@
       <option name="presentableId" value="Default" />
       <updated>1514467651361</updated>
     </task>
+    <task id="LOCAL-00001" summary="initialized classifier list, changed 'weights' to 'train_weights'">
+      <created>1514477561854</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1514477561854</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -190,6 +196,10 @@
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="initialized classifier list, changed 'weights' to 'train_weights'" />
+    <option name="LAST_COMMIT_MESSAGE" value="initialized classifier list, changed 'weights' to 'train_weights'" />
+  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
     <watches-manager />
@@ -217,8 +227,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/AdaBoost.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="115">
-          <caret line="42" column="62" lean-forward="true" selection-start-line="42" selection-start-column="62" selection-end-line="42" selection-end-column="62" />
+        <state relative-caret-position="230">
+          <caret line="28" column="36" lean-forward="false" selection-start-line="28" selection-start-column="36" selection-end-line="28" selection-end-column="36" />
           <folding>
             <element signature="e#530#548#0" expanded="true" />
           </folding>
