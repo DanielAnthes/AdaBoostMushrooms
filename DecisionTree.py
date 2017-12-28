@@ -137,7 +137,7 @@ class DecisionTree:
         else:
             current = self.root
             while current.classification == None:
-                print('step')
+                #print('step')
                 if current.condition(element):
                     current = current.left
                 else:
