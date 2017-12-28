@@ -34,17 +34,16 @@ class AdaBoost:
         dataIndices = range(0,length)
         weights = np.full(length, 1/float(length))
         self.classifiers = np.empty(numClassifiers)
-        self.classifiers = np.empty(numClassifiers)
 
         #translate classes
         classNames = np.unique(y)
-        classes = [-1 if c == classNames[0] else 1 for c in y]
+        classes = np.array([-1 if c == classNames[0] else 1 for c in y])
         self.dict = {classNames[0] : -1, classNames[1] : 1}
 
         for i in range(0,numClassifiers):
             #draw training set
             nSamples = int(length*trainingSize)
-            sampleIndices = np.random.choice(dataIndices, size = nSamples, p = weights)
+            sampleIndices = np.random.choice(dataIndices, size = nSamples, p = weights, replace = False)
             sampleX = data[sampleIndices]
             sampley = classes[sampleIndices]
 
