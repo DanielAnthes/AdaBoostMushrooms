@@ -1,3 +1,6 @@
 import numpy as np
+import DecisionTree as dt
 
-print([0] * 4)
+print(
+    [dt.DecisionTree()] * 4
+)
