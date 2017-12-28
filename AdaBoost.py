@@ -39,13 +39,12 @@ class AdaBoost:
         #translate classes
         classNames = np.unique(y)
         classes = [-1 if c == classNames[0] else 1 for c in y]
-        self.dict = np.array((classNames[0],-1),(classNames[1],1))
-
+        self.dict = {classNames[0] : -1, classNames[1] : 1}
 
         for i in range(0,numClassifiers):
             #draw training set
             nSamples = int(length*trainingSize)
-            sampleIndices = np.random.sample(dataIndices, size = nSamples, p = weights)
+            sampleIndices = np.random.choice(dataIndices, size = nSamples, p = weights)
             sampleX = data[sampleIndices]
             sampley = classes[sampleIndices]
 
@@ -53,4 +52,18 @@ class AdaBoost:
             tree = dt.DecisionTree()
             tree.fitTree(sampleX,sampley, max_depth= 1)
 
-
+    def predict(self, element):
+        if self.classifiers == None:
+            print("train classifier first")
+            return None
+        elif np.ndim(element) > 1:
+            length = len(element)
+            results = np.empty(length)
+            for i in range(0, length):
+                e = element[i]
+                results[i] = self.predict(e)
+            return results
+        else:
+            numClassifiers = len(self.classifiers)
+            weightedClassifications = [c.predict(element)*w for (c,w) in zip(self.classifiers,self.weights)]
+            return (-1 if np.sum(weightedClassifications) < 0 else 1)
