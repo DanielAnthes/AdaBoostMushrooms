@@ -40,7 +40,7 @@ class AdaBoost:
 
         # translate classes
         classNames = np.unique(y)
-        classes = [-1 if c == classNames[0] else 1 for c in y]
+        classes = np.array([-1 if c == classNames[0] else 1 for c in y])
         self.dict = {classNames[0]: -1, classNames[1]: 1}
 
         for i in range(0, numClassifiers):
