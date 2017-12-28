@@ -99,3 +99,6 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# melle's console file
+Console.py
