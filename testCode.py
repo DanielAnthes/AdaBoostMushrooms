@@ -31,12 +31,14 @@ y_arr = y.values
 #testX = np.array([[0,0],[0,0],[0,0],[0,0],[0,1],[0,1],[0,1],[0,1],[1,0],[1,0],[1,0],[1,0],[1,1],[1,1],[1,1],[1,1]])
 #testy = np.array([0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3])
 
-testX = X[0:5]
+testX = X_arr[0:5, :]
 #%%
 
 booster = ab.AdaBoost()
-booster.train(X, y)
-pred = booster.predict(testX)
+booster.train(X_arr, y_arr)
+pred = booster.predict2(X_arr)
+print(pred)
+print(y_arr)
 
 
 #tree = dt.DecisionTree()

@@ -19,6 +19,7 @@ weak learner.
 # necessary imports
 import numpy as np
 import DecisionTree as dt
+#np.set_printoptions(threshold=np.nan)
 
 
 class AdaBoost:
@@ -27,6 +28,7 @@ class AdaBoost:
         self.classifiers = None
         self.csf_weights = None
         self.dict = None  # store translation between actual class names and {-1,1}
+        self.classNames = None
 
     # takes data and labels, number of classifiers and the proportion of training examples used in each training run
     def train(self, X, y, numClassifiers=10, trainingSize=0.66):
@@ -48,18 +50,27 @@ class AdaBoost:
             sampleIndices = np.random.choice(dataIndices, size=nSamples, p=train_weights)
             sampleX = data[sampleIndices]
             sampley = classes[sampleIndices]
+            print('sample y true: ', sampley)
+            print('train weights: ', train_weights)
+            print('sum(train weights): ', sum(train_weights))
+            print('sample idx: ', sampleIndices)
 
             # train classifier
             self.classifiers[i].fitTree(sampleX, sampley, max_depth=1)
 
             # update weights
             #y_pred = np.array([self.dict[y] for y in self.classifiers[i].predict(data)])
-            y_pred = np.array([-1 if y == 0 else 1 for y in self.classifiers[i].predict(data)])
+            #y_pred = np.array([-1 if y == self.classNames[0] else 1 for y in self.classifiers[i].predict(data)])
+            y_pred = self.classifiers[i].predict(data)
+            print('y pred: ', y_pred)
             self.csf_weights[i] = self.compute_alpha(y_pred, classes)
+            print('csf weight: ', self.csf_weights[i])
             train_weights = self.compute_train_weights(y_pred, classes, train_weights, i)
-
+            print("")
+            if i == 4:
+                break
         # normalize classifier weights
-        self.csf_weights = self.csf_weights / sum(self.csf_weights)
+        # self.csf_weights = self.csf_weights / sum(self.csf_weights)
 
     def predict(self, element):
         if self.classifiers == None:
@@ -92,6 +103,7 @@ class AdaBoost:
     # small functions for ada boost
     def compute_alpha(self, y_pred, y_true):
         error_rate = (sum([0 if pred == true else 1 for (pred, true) in zip(y_pred, y_true)]) / len(y_true))
+        #print(0.5 * np.log((1 - error_rate) / (error_rate + 0.000001)))
         return 0.5 * np.log((1 - error_rate) / (error_rate + 0.000001))
 
     def compute_train_weights(self, y_pred, y_true, train_weights, csf_index):
