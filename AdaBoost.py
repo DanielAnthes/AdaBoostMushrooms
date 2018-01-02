@@ -44,7 +44,7 @@ class AdaBoost:
         # translate classes
         classNames = self.classNames = np.unique(y)
         classes = np.array([-1 if c == classNames[0] else 1 for c in y])
-        self.dict = {classNames[0]: -1, classNames[1]: 1}
+        self.dict = {-1 : classNames[0], 1 : classNames[1]}
         nSamples = int(length * trainingSize)
 
         for i in range(0, numClassifiers):
@@ -76,7 +76,7 @@ class AdaBoost:
             return None
         elif np.ndim(element) > 1:
             length = len(element)
-            results = np.empty(length)
+            results = np.empty(length,dtype=str)
             for i in range(0, length):
                 e = element[i]
                 results[i] = self.predict(e)
@@ -84,7 +84,14 @@ class AdaBoost:
         else:
             numClassifiers = len(self.classifiers)
             weightedClassifications = [c.predict(element) * w for (c, w) in zip(self.classifiers, self.csf_weights)]
-            return (-1 if np.sum(weightedClassifications) < 0 else 1)
+            return self.convert((-1 if np.sum(weightedClassifications) < 0 else 1))
+
+    def convert(self,element):
+        if element not in self.dict.keys():
+            print('invalid key')
+            return None
+        else:
+            return self.dict[element]
 
     # my own prediction function
     def predict2(self, data):

@@ -18,7 +18,7 @@ import numpy as np
 class DecisionTree:
     def __init__(self,purityMeasure='gini'):
         self.purity_measure = purityMeasure
-        self.depth = 0
+        self.depth = 0 #TODO max depth should be +1 in the end
         self.root = Node()
         
     def classify(self,y)  :
@@ -89,7 +89,6 @@ class DecisionTree:
         
     def fitTree(self,X,y, currNode = None,max_depth = None,minNodeSize=None):
         #TODO does not work properly without setting a max_depth
-        #TODO Nodes are not added correctly!
         #in first call get root Node
         if currNode == None:
             newNode = self.root
@@ -99,6 +98,7 @@ class DecisionTree:
             #create leaf node, assign classification
             leaf = newNode
             leaf.classification = self.classify(y)
+
             
         else:
             #create node, generate test condition
@@ -128,11 +128,11 @@ class DecisionTree:
         #add support for classification of multiple elements at once
         elif np.ndim(element) > 1:
             length = len(element)
-            results = np.empty(length)
+            results = []
             for i in range(0,length):
                 e = element[i]
-                results[i] = self.predict(e)
-            return results
+                results.append(self.predict(e))
+            return np.array(results)
 
         else:
             current = self.root
