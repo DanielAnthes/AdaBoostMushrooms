@@ -36,10 +36,10 @@ class AdaBoost:
         data = np.array(X)
         dataIndices = range(0, length)
         train_weights = np.full(length, 1 / float(length))
-        self.classifiers = np.array([])  # np.full(numClassifiers, dt.DecisionTree())
+        self.classifiers = np.array([])
         self.csf_weights = np.full(numClassifiers, 0.0)
 
-        # translate classes
+        # translate classes similar to Shapire QUOTE
         classNames = self.classNames = np.unique(y)
         classes = np.array([-1 if c == classNames[0] else 1 for c in y])
         self.dict = {-1 : classNames[0], 1 : classNames[1]}
@@ -56,7 +56,11 @@ class AdaBoost:
 
             # update weights
             y_pred = tree.predict(data)
+
             alpha = self.compute_alpha(y_pred, classes)
+
+            print("Error of classifier: ",sum([0 if pred == true else 1 for (pred, true) in zip(y_pred, classes)]) / float(len(y_pred)), " weight of classifier: ", alpha)  # for testing
+
             self.csf_weights[i] = alpha
             train_weights = self.compute_train_weights(y_pred, classes, train_weights, i)
             self.classifiers = np.append(self.classifiers, tree)
@@ -108,13 +112,19 @@ class AdaBoost:
         # debugger workaround
         if not self.debugger_working:
             print("error rate: ", error_rate)
-        return 0.5 * np.log((1 - error_rate) / (error_rate + 0.000001)) #add very small constant to denominator to avoid division by 0
+        return 0.5 * np.log((1.0 - error_rate) / (error_rate + 0.000001)) #add very small constant to denominator to avoid division by 0
 
     def compute_train_weights(self, y_pred, y_true, train_weights, csf_index):
         csf_weight = self.csf_weights[csf_index]
         y_true = np.array(y_true)
         y_pred = np.array(y_pred)
-        new_weights = train_weights * np.exp(- float(csf_weight) * y_true * y_pred)
+        #new_weights = train_weights * np.exp(- float(csf_weight) * y_true * y_pred)
+
+        new_weights = np.ones(len(train_weights))
+        for i in range(0,len(train_weights)):
+            correct = y_pred[i] == y_true[i]
+            new_weights[i] = train_weights[i]*np.exp(-csf_weight) if correct else train_weights[i] * np.exp(csf_weight)
+
         normalized_weights = new_weights / float(sum(new_weights))
         return normalized_weights
 

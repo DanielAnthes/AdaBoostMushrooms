@@ -70,10 +70,10 @@ class DecisionTree:
         return 1 - helper
             
         
-    def stop(self, X, y, max_depth = None, minNodeSize = None):
+    def stop(self, X, y, max_depth = None, minNodeSize = 2):
         #also stop if there is no more gain?
         size = len(X)
-        if self.gini(y) == 0:
+        if self.gini(y) == 0.0:
             return True
         if self.depth >= max_depth:
             return True

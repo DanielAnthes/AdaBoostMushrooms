@@ -9,8 +9,8 @@ import pandas as pa
 import DecisionTree as dt
 
 boost = ab.AdaBoost()
-X = np.array([[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1]])
-y = np.array(['a','b','a','b','a','a','b','a','a','a','a','a','a','a','a','a','a','a','b','a','b','b','b','b','b','b','b','b','b','b','b','b','b','a','b','b','b','b','b','b'])
+X_arr = np.array([[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1],[1,1,1]])
+y_arr = np.array(['a','b','a','b','a','a','b','a','a','a','a','a','a','a','a','a','a','a','b','a','b','b','b','b','b','b','b','b','b','b','b','b','b','a','b','b','b','b','b','b'])
 
 data = pa.read_csv('Data/mushrooms.csv')
 y = data['class']                   #class
@@ -20,20 +20,27 @@ attributes = X.columns.values
 X_arr = X.values
 y_arr = y.values
 
-trainSize = 6000
+indices = range(0,len(y_arr))
+trainSize = 4000
+train_indices = np.random.choice(indices, trainSize, replace=False)
+test_indices = np.setdiff1d(indices, train_indices, assume_unique=True)
 
-X_train, X_test = np.split(X_arr,[trainSize])
-y_train, y_test = np.split(y_arr, [trainSize])
+X_train = X_arr[train_indices]
+y_train = y_arr[train_indices]
+X_test = X_arr[test_indices]
+y_test = y_arr[test_indices]
 
-'''
+
+
 #boost.train(X,y)
-boost.train(X_train,y_train,numClassifiers=3)
+boost.train(X_train,y_train,numClassifiers=10)
 
 #now test with remaining data
 pred_boost = boost.predict(X_test)
 error_rate_boost = (sum([0 if pred == true else 1 for (pred, true) in zip(y_test, pred_boost)]) / float(len(y_test)))
 print('Adaboost error rate: ',error_rate_boost)
-'''
+
+
 #now for decision tree
 tree = dt.DecisionTree()
 tree.fitTree(X_train,y_train)
@@ -41,3 +48,5 @@ pred_tree = tree.predict(X_test)
 error_rate_tree = (sum([0 if pred == true else 1 for (pred, true) in zip(y_test, pred_tree)]) / float(len(y_test)))
 print('DecisionTree error rate: ', error_rate_tree)
 print("done")
+
+
