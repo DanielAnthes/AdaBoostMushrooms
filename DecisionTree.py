@@ -18,10 +18,10 @@ import numpy as np
 class DecisionTree:
     def __init__(self,purityMeasure='gini'):
         self.purity_measure = purityMeasure
-        self.depth = 0 #TODO max depth should be +1 in the end
+        self.depth = 0
         self.root = Node()
         
-    def classify(self,y)  :
+    def classify(self,y):
         #TODO account for empty leaf nodes
         counter = Counter(y)
         return counter.most_common(1)[0][0]
@@ -86,9 +86,13 @@ class DecisionTree:
         
         else:
             return False
-        
-    def fitTree(self,X,y, currNode = None,max_depth = None,minNodeSize=None):
-        #TODO does not work properly without setting a max_depth
+
+
+    def fit(self,X,y, currDepth, currNode = None,max_depth = 999,minNodeSize=None):
+
+        if self.depth < currDepth:
+            self.depth = currDepth
+
         #in first call get root Node
         if currNode == None:
             newNode = self.root
@@ -102,7 +106,6 @@ class DecisionTree:
             
         else:
             #create node, generate test condition
-            self.depth += 1
             node = newNode
             node.splitCriteria = self.generateSplit(X,y)
             indices_left  = list()
@@ -117,10 +120,14 @@ class DecisionTree:
                     indices_right.append(i)
             #recursively call fitTree for child nodes
             node.left  = Node()
-            self.fitTree( X[indices_left], y[indices_left], node.left, max_depth, minNodeSize)
+            self.fit( X[indices_left], y[indices_left], currDepth+1, node.left, max_depth, minNodeSize)
             node.right = Node()
-            self.fitTree(X[indices_right], y[indices_right], node.right, max_depth, minNodeSize)
-    
+            self.fit(X[indices_right], y[indices_right], currDepth+1, node.right, max_depth, minNodeSize)
+
+
+    def fitTree(self,X,y, currNode = None,max_depth = 999,minNodeSize=None):
+        return self.fit(X,y, 0, currNode,max_depth ,minNodeSize)
+
     def predict(self, element):
         if self.root == None:
             print("call fitTree first to generate tree")

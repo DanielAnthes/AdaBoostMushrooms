@@ -24,17 +24,20 @@ trainSize = 6000
 
 X_train, X_test = np.split(X_arr,[trainSize])
 y_train, y_test = np.split(y_arr, [trainSize])
+
+'''
 #boost.train(X,y)
-boost.train(X_train,y_train, trainingSize=0.1,numClassifiers=1)
+boost.train(X_train,y_train,numClassifiers=3)
 
 #now test with remaining data
 pred_boost = boost.predict(X_test)
 error_rate_boost = (sum([0 if pred == true else 1 for (pred, true) in zip(y_test, pred_boost)]) / float(len(y_test)))
 print('Adaboost error rate: ',error_rate_boost)
-
+'''
 #now for decision tree
 tree = dt.DecisionTree()
-tree.fitTree(X_train,y_train,max_depth=10)
+tree.fitTree(X_train,y_train)
 pred_tree = tree.predict(X_test)
 error_rate_tree = (sum([0 if pred == true else 1 for (pred, true) in zip(y_test, pred_tree)]) / float(len(y_test)))
 print('DecisionTree error rate: ', error_rate_tree)
+print("done")

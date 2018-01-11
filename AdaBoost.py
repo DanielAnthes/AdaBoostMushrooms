@@ -19,8 +19,6 @@ weak learner.
 # necessary imports
 import numpy as np
 import DecisionTree as dt
-#np.set_printoptions(threshold=np.nan)
-
 
 class AdaBoost:
 
@@ -33,7 +31,7 @@ class AdaBoost:
         self.classNames = None
 
     # takes data and labels, number of classifiers and the proportion of training examples used in each training run
-    def train(self, X, y, numClassifiers=10, trainingSize=0.66):
+    def train(self, X, y, numClassifiers=10):
         length = len(X)
         data = np.array(X)
         dataIndices = range(0, length)
@@ -45,11 +43,10 @@ class AdaBoost:
         classNames = self.classNames = np.unique(y)
         classes = np.array([-1 if c == classNames[0] else 1 for c in y])
         self.dict = {-1 : classNames[0], 1 : classNames[1]}
-        nSamples = int(length * trainingSize)
 
         for i in range(0, numClassifiers):
             # draw training set
-            sampleIndices = np.random.choice(dataIndices, size=nSamples, p=train_weights, replace= False)
+            sampleIndices = np.random.choice(dataIndices, size=length, p=train_weights, replace= True)
             sampleX = data[sampleIndices]
             sampley = classes[sampleIndices]
 
