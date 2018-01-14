@@ -31,7 +31,7 @@ class AdaBoost:
         self.classNames = None
 
     # takes data and labels, number of classifiers and the proportion of training examples used in each training run
-    def train(self, X, y, numClassifiers=10):
+    def train(self, X, y, numClassifiers=10, verbose=False):
         length = len(X)
         data = np.array(X)
         dataIndices = range(0, length)
@@ -58,8 +58,8 @@ class AdaBoost:
             y_pred = tree.predict(data)
 
             alpha = self.compute_alpha(y_pred, classes)
-
-            print("Error of classifier: ",sum([0 if pred == true else 1 for (pred, true) in zip(y_pred, classes)]) / float(len(y_pred)), " weight of classifier: ", alpha)  # for testing
+            if verbose:
+                print("Error of classifier: ",sum([0 if pred == true else 1 for (pred, true) in zip(y_pred, classes)]) / float(len(y_pred)), " weight of classifier: ", alpha)  # for testing
 
             self.csf_weights[i] = alpha
             train_weights = self.compute_train_weights(y_pred, classes, train_weights, i)
