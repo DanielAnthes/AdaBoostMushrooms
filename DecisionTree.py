@@ -125,7 +125,7 @@ class DecisionTree:
             self.fit(X[indices_right], y[indices_right], currDepth+1, node.right, max_depth, minNodeSize)
 
 
-    def fitTree(self,X,y, currNode = None,max_depth = 999,minNodeSize=None):
+    def fitTree(self,X,y, currNode = None,max_depth = 200,minNodeSize=None):
         return self.fit(X,y, 0, currNode,max_depth ,minNodeSize)
 
     def predict(self, element):

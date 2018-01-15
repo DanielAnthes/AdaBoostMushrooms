@@ -15,23 +15,9 @@ print('***********************************************************')
 set up data
 '''
 
-senate_data = pa.read_csv('Data/house_votes.csv')
-X_senate = senate_data.iloc[:,range(1,17)]
-y_senate = senate_data.iloc[:,range(0,1)]
-X_arr = X_senate.values
-y_arr = y_senate.values
 
-indices = range(0,len(y_arr))
-trainSize = 100
-train_indices = np.random.choice(indices, trainSize, replace=False)
-test_indices = np.setdiff1d(indices, train_indices, assume_unique=True)
 
-X_train = X_arr[train_indices]
-y_train = y_arr[train_indices]
-X_test = X_arr[test_indices]
-y_test = y_arr[test_indices]
 
-'''
 data = pa.read_csv('Data/mushrooms.csv')
 y = data['class']                   #class
 X = data.iloc[:,range(1,23)]        #attributes
@@ -39,7 +25,7 @@ X = data.iloc[:,range(1,23)]        #attributes
 attributes = X.columns.values
 X_arr = X.values
 y_arr = y.values
-print(X_arr.shape)
+print(type(X_arr))
 indices = range(0,len(y_arr))
 trainSize = 1000
 train_indices = np.random.choice(indices, trainSize, replace=False)
@@ -49,7 +35,7 @@ X_train = X_arr[train_indices]
 y_train = y_arr[train_indices]
 X_test = X_arr[test_indices]
 y_test = y_arr[test_indices]
-'''
+
 
 
 
@@ -147,12 +133,6 @@ y_test = y_arr[test_indices]
 
 runTest()
 
-'''
-
-'''
-run experiments
-
-
 results = list()
 for i in range(1,201,10):
     b_train, b_test = runTest(i)
@@ -166,3 +146,4 @@ print('')
 print('*****done*****')
 print('')
 '''
+runTree()
