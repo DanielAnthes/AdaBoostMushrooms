@@ -77,10 +77,10 @@ class AdaBoost:
             return None
         elif np.ndim(element) > 1:
             length = len(element)
-            results = np.empty(length,dtype=str)
+            results = list()
             for i in range(0, length):
                 e = element[i]
-                results[i] = self.predict(e)
+                results.append(self.predict(e))
             return results
         else:
             numClassifiers = len(self.classifiers)
@@ -92,7 +92,8 @@ class AdaBoost:
             print('invalid key')
             return None
         else:
-            return self.dict[element]
+            classification = self.dict[element]
+            return classification
 
     # my own prediction function
     def predict2(self, data):
