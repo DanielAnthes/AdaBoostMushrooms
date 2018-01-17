@@ -55,7 +55,7 @@ class AdaBoost:
             tree.fitTree(sampleX, sampley, max_depth=1)
 
             # update weights
-            y_pred = tree.predict(data)
+            y_pred = tree.predict(data) #TODO check if this works otherwise change back to
 
             alpha = self.compute_alpha(y_pred, classes)
             if verbose:
@@ -105,7 +105,7 @@ class AdaBoost:
                 score += self.csf_weights[j] * self.classifiers[j].predict(data[i])
             score = np.sign(score)
             results.append(score)
-        return results
+        return [self.convert(e) for e in results]
 
     # small functions for ada boost
     def compute_alpha(self, y_pred, y_true):
