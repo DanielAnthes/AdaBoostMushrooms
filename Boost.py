@@ -37,7 +37,7 @@ class Boost:
             if verbose:
                 print('Error Rate: ', err_rate)
             #calculate stage value ln((1-error)/error)
-            stage = np.log((1-err_rate)/err_rate+0.00000000001) #add correction term to avoid division by 0
+            stage = np.log((1-err_rate)) #add correction term to avoid division by 0
             if verbose:
                 print('Stage value: ', stage)
             #update training weights with w = w*exp(stage*error)
@@ -71,31 +71,3 @@ class Boost:
                 p_sum = sum(p_con)
                 p_class = (self.classes[0] if p_sum < 0 else self.classes[1])
                 return p_class
-
-
-
-data = pa.read_csv('Data/mushrooms.csv')
-y = data['class']                   #class
-X = data.iloc[:,range(1,23)]        #attributes
-
-attributes = X.columns.values
-X_arr = X.values
-y_arr = y.values
-indices = range(0,len(y_arr))
-trainSize = 1000
-train_indices = np.random.choice(indices, trainSize, replace=False)
-test_indices = np.setdiff1d(indices, train_indices, assume_unique=True)
-
-X_train = X_arr[train_indices]
-y_train = y_arr[train_indices]
-X_test = X_arr[test_indices]
-y_test = y_arr[test_indices]
-
-b = Boost()
-b.train(X_train,y_train,10,True)
-y_predicted = b.predict(X_test)
-
-error_rate = (sum([0 if pred == true else 1 for (pred, true) in zip(y_predicted, y_test)]) / float(len(y_test)))
-print('')
-print('****Results****')
-print('Test Error: ', error_rate)

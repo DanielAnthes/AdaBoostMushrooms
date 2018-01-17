@@ -1,4 +1,4 @@
-import AdaBoost as ab
+import Boost as ab
 import numpy as np
 import pandas as pa
 import DecisionTree as dt
@@ -30,7 +30,7 @@ y_test = y_arr[test_indices]
 
 print(y_train.shape)
 
-
+'''
 tree = dt.DecisionTree()
 tree.fitTree(X_arr,y_arr,max_depth=100)
 
@@ -49,17 +49,25 @@ print('Depth: ', tree.depth)
 print('')
 print('Training Error: ', error_rate_tree_train)
 print('Test Error    : ', error_rate_tree_test)
+'''
 
-boost = ab.AdaBoost()
-boost.train(X_train, y_train, numClassifiers=10,verbose=False)
-pred_boost_train = boost.predict2(X_train)
-pred_boost_test = boost.predict2(X_test)
+cNums = range(1,101)
+train_errs = list()
+test_errs  = list()
+for i in cNums:
+    boost = ab.Boost()
+    boost.train(X_train, y_train, cNum=i,verbose=False)
+    pred_boost_train = boost.predict(X_train)
+    pred_boost_test = boost.predict(X_test)
+    error_rate_boost_test = (sum([0 if pred == true else 1 for (pred, true) in zip(y_test, pred_boost_test)]) / float(len(y_test)))
+    error_rate_boost_train = (sum([0 if pred == true else 1 for (pred, true) in zip(y_train, pred_boost_train)]) / float(len(y_train)))
+    train_errs.append(error_rate_boost_train)
+    test_errs.append(error_rate_boost_test)
 
-error_rate_boost_test = (sum([0 if pred == true else 1 for (pred, true) in zip(y_test, pred_boost_test)]) / float(len(y_test)))
-error_rate_boost_train = (sum([0 if pred == true else 1 for (pred, true) in zip(y_train, pred_boost_train)]) / float(len(y_train)))
 
-print('')
-print('***** RESULTS ADABOOST *****')
-print('Train Error: ', error_rate_boost_train)
-print('Test Error:  ', error_rate_boost_test)
+plt.figure()
+plt.scatter(cNums,train_errs, c = 'red')
+plt.scatter(cNums, test_errs, c = 'blue')
+plt.legend()
+plt.show()
 
