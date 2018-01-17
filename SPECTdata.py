@@ -27,7 +27,7 @@ X = pa.concat(X_frames).values
 y = pa.concat(y_frames).values.flatten()
 
 indices = range(0,len(y))
-trainSize = 50
+trainSize = 10
 train_indices = np.random.choice(indices, trainSize, replace=False)
 test_indices = np.setdiff1d(indices, train_indices, assume_unique=True)
 
@@ -55,21 +55,25 @@ Repeat for Adaboost
 
 train_errs = list()
 test_errs  = list()
-
-cNums = range(1,101)
+duplicate = 10
+cNums = range(1,30)
 
 for i in cNums:
-    boost = ab.Boost()
-    boost.train(X_train, y_train, cNum=i,verbose=False)
-    pred_boost_train = boost.predict(X_train)
-    pred_boost_test = boost.predict(X_test)
-    pred_boost_train = [int(x) for x in pred_boost_train]
-    pred_boost_test = [int(x) for x in pred_boost_test]
-    error_rate_boost_test = (sum([0 if pred == true else 1 for (pred, true) in zip(y_test, pred_boost_test)]) / float(len(y_test)))
-    error_rate_boost_train = (sum([0 if pred == true else 1 for (pred, true) in zip(y_train, pred_boost_train)]) / float(len(y_train)))
-    train_errs.append(error_rate_boost_train)
-    test_errs.append(error_rate_boost_test)
-
+    trains = list()
+    tests = list()
+    for j in range(duplicate):
+        boost = ab.Boost()
+        boost.train(X_train, y_train, cNum=i,verbose=False)
+        pred_boost_train = boost.predict(X_train)
+        pred_boost_test = boost.predict(X_test)
+        pred_boost_train = [int(x) for x in pred_boost_train]
+        pred_boost_test = [int(x) for x in pred_boost_test]
+        error_rate_boost_test = (sum([0 if pred == true else 1 for (pred, true) in zip(y_test, pred_boost_test)]) / float(len(y_test)))
+        error_rate_boost_train = (sum([0 if pred == true else 1 for (pred, true) in zip(y_train, pred_boost_train)]) / float(len(y_train)))
+        trains.append(error_rate_boost_train)
+        tests.append(error_rate_boost_test)
+    train_errs.append(min(trains))
+    test_errs.append(min(tests))
 
 plt.figure()
 plt.scatter(cNums,train_errs, c = 'red')
