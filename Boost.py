@@ -33,13 +33,13 @@ class Boost:
             #predictions on whole data set
             pred = cl.predict(X)
             #calculate error on entire data, weigh each error by weight of its datapoint
-            err = [(0 if p==t else 1) for p, t in zip(pred, y)]
+            err = [(0 if p==t else 1) for p, t in zip(pred, y)] #TODO CHECK IF COMPARISON WORKS, DIFFERNT REPRESENTATIONS OF STRINGS!
             err_weighted = err*w
-            err_rate = sum(err_weighted) / float(sum(w))
+            err_rate = sum(err_weighted,0.0) #make sure this is a float, already normalized!
             if verbose:
                 print('Error Rate: ', err_rate)
             #calculate stage value ln((1-error)/error)
-            stage = np.log((1-err_rate)) #add correction term to avoid division by 0
+            stage = np.log((1-err_rate)/(err_rate+0.000001)) #add correction term to avoid division by 0
             if verbose:
                 print('Stage value: ', stage)
             #update training weights with w = w*exp(stage*error)

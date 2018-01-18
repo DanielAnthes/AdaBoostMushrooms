@@ -27,7 +27,7 @@ X = pa.concat(X_frames).values
 y = pa.concat(y_frames).values.flatten()
 
 indices = range(0,len(y))
-trainSize = 10
+trainSize = 50
 train_indices = np.random.choice(indices, trainSize, replace=False)
 test_indices = np.setdiff1d(indices, train_indices, assume_unique=True)
 
@@ -37,7 +37,7 @@ X_test = X[test_indices]
 y_test = y[test_indices]
 
 
-'''
+
 tree = dt.DecisionTree()
 tree.fitTree(X_train,y_train, max_depth= 10)
 pred_tree_train = tree.predict(X_train)
@@ -50,13 +50,13 @@ print('Test Error:  ', error_rate_tree_test)
 print('Depth: ', tree.depth)
 
 
-Repeat for Adaboost
-'''
+#Repeat for Adaboost
+
 
 train_errs = list()
 test_errs  = list()
-duplicate = 10
-cNums = range(1,30)
+duplicate = 30
+cNums = range(1,81)
 
 for i in cNums:
     trains = list()
@@ -72,11 +72,13 @@ for i in cNums:
         error_rate_boost_train = (sum([0 if pred == true else 1 for (pred, true) in zip(y_train, pred_boost_train)]) / float(len(y_train)))
         trains.append(error_rate_boost_train)
         tests.append(error_rate_boost_test)
-    train_errs.append(min(trains))
-    test_errs.append(min(tests))
+    train_errs.append(np.mean(trains))
+    test_errs.append(np.mean(tests))
 
 plt.figure()
 plt.scatter(cNums,train_errs, c = 'red')
 plt.scatter(cNums, test_errs, c = 'blue')
+plt.plot(cNums, [error_rate_boost_train]*80, c = 'orange')
+plt.plot(cNums,[error_rate_boost_test]*80, c = 'purple')
 plt.legend()
 plt.show()
