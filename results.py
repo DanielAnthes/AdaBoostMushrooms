@@ -14,32 +14,10 @@ print('***********************************************************')
 '''
 set up data
 '''
-
-
-
-
-data = pa.read_csv('Data/mushrooms.csv')
-y = data['class']                   #class
-X = data.iloc[:,range(1,23)]        #attributes
-
-attributes = X.columns.values
-X_arr = X.values
-y_arr = y.values
-print(type(X_arr))
-indices = range(0,len(y_arr))
-trainSize = 1000                                                                #ALTER SIZE OF TRAINING SET HERE
-train_indices = np.random.choice(indices, trainSize, replace=False)
-test_indices = np.setdiff1d(indices, train_indices, assume_unique=True)
-
-X_tr = X_arr[train_indices]
-y_tr = y_arr[train_indices]
-X_te = X_arr[test_indices]
-y_te = y_arr[test_indices]
-
-
-
-
-
+data = pa.read_csv('Data/Connect4/connect-4.csv')
+X = data.iloc[:,range(0,42)].values
+y = data.iloc[:,42].values.flatten()
+y = np.array([x if x == "win" else "loss" for x in y])
 
 '''
 Helper function definitions
@@ -109,7 +87,7 @@ def runTree(X_train,y_train,X_test,y_test, d):
 
 
 #tree tests
-iterations = 40
+iterations = 100
 i_depth = range(1,iterations+1)
 
 t_train = list()
@@ -127,7 +105,18 @@ for i in i_depth:
     t_de = list()
     b_tr = list()
     b_te = list()
-    for j in range(10):
+    for j in range(3):
+        indices = range(0, len(y))
+        trainSize = 10000  # ALTER SIZE OF TRAINING SET HERE
+        train_indices = np.random.choice(indices, trainSize, replace=False)
+        test_indices = np.setdiff1d(indices, train_indices, assume_unique=True)
+
+        X_tr = X[train_indices]
+        y_tr = y[train_indices]
+        X_te = X[test_indices]
+        y_te = y[test_indices]
+
+
         tr,te,d = runTree(X_tr,y_tr,X_te,y_te,i)
         btr,bte = runBoost(X_tr,y_tr,X_te,y_te,i)
         t_tr.append(tr)
