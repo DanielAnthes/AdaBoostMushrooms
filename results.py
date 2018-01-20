@@ -27,14 +27,14 @@ X_arr = X.values
 y_arr = y.values
 print(type(X_arr))
 indices = range(0,len(y_arr))
-trainSize = 1000
+trainSize = 1000                                                                #ALTER SIZE OF TRAINING SET HERE
 train_indices = np.random.choice(indices, trainSize, replace=False)
 test_indices = np.setdiff1d(indices, train_indices, assume_unique=True)
 
-X_train = X_arr[train_indices]
-y_train = y_arr[train_indices]
-X_test = X_arr[test_indices]
-y_test = y_arr[test_indices]
+X_tr = X_arr[train_indices]
+y_tr = y_arr[train_indices]
+X_te = X_arr[test_indices]
+y_te = y_arr[test_indices]
 
 
 
@@ -46,7 +46,7 @@ Helper function definitions
 '''
 
 
-def runTest(numClassifiers = 10):
+def runBoost(X_train, y_train, X_test, y_test, numClassifiers = 10):
     '''
     initialize AdaBoost
     '''
@@ -80,7 +80,7 @@ def runTest(numClassifiers = 10):
 
     return error_rate_boost_train,error_rate_boost_test
 
-def runTree():
+def runTree(X_train,y_train,X_test,y_test, d):
 
     '''
     initialize Decision Tree
@@ -88,7 +88,7 @@ def runTree():
 
     #now for decision tree
     tree = dt.DecisionTree()
-    tree.fitTree(X_train,y_train) #calling fitTree without maxDepth argument sets max depth to 999
+    tree.fitTree(X_train,y_train, max_depth=d) #calling fitTree without maxDepth argument sets max depth to 999
 
     #test on training set
     pred_tree_train = tree.predict(X_train)
@@ -105,45 +105,44 @@ def runTree():
     print('')
     print('Training Error: ', error_rate_tree_train)
     print('Test Error    : ', error_rate_tree_test)
-
-'''
-Notes and preliminary results:
-
-- Both AdaBoost and a simple Tree seem to generalize well for this dataset, even for very small training sizes. This could be due to the simple nature of the data
-- currently the unrestricted DecisionTree performs slightly better than Adaboost with 20 classifiers
-- try removing columns 4 and 19 since they seem (almost) sufficient to classify the data on their own, the other classes are almost never used
-
-'''
-
-'''attributes = X.columns.values
-X_arr = X.values
+    return error_rate_tree_train,error_rate_tree_test,tree.depth
 
 
-attributes = np.delete(attributes,[4,6,19])
-X_arr = np.delete(X_arr,[4,6,19],1)
-print(X_arr.shape)
-indices = range(0,len(y_arr))
-train_indices = np.random.choice(indices, trainSize, replace=False)
-test_indices = np.setdiff1d(indices, train_indices, assume_unique=True)
+#tree tests
+iterations = 40
+i_depth = range(1,iterations+1)
 
-X_train = X_arr[train_indices]
-y_train = y_arr[train_indices]
-X_test = X_arr[test_indices]
-y_test = y_arr[test_indices]
+t_train = list()
+t_test = list()
+t_depth = list()
 
-runTest()
+b_train = list()
+b_test = list()
 
-results = list()
-for i in range(1,201,10):
-    b_train, b_test = runTest(i)
-    results.append([b_train, b_test])
 
-results_np = np.array(results)
-df = pa.DataFrame(results_np)
-print(df)
-df.to_csv('Data/BoostResults')
-print('')
-print('*****done*****')
-print('')
-'''
-runTree()
+for i in i_depth:
+    print(i)
+    t_tr = list()
+    t_te = list()
+    t_de = list()
+    b_tr = list()
+    b_te = list()
+    for j in range(10):
+        tr,te,d = runTree(X_tr,y_tr,X_te,y_te,i)
+        btr,bte = runBoost(X_tr,y_tr,X_te,y_te,i)
+        t_tr.append(tr)
+        t_te.append(te)
+        t_de.append(d)
+        b_tr.append(btr)
+        b_te.append(bte)
+    t_train.append(np.mean(t_tr))
+    t_test.append(np.mean(t_te))
+    t_depth.append(np.mean(t_de))
+    b_train.append(np.mean(b_tr))
+    b_test.append(np.mean(b_te))
+
+
+print('Storing Results')
+res = {'tree train err': t_train, 'tree test err': t_test, 'Tree Depth': t_depth, 'Boost class num':i_depth, 'boost train err': b_train, 'boost test err': b_test}
+df = pa.DataFrame(data = res, index = i_depth)
+df.to_csv('Data/Mushrooms/results.csv')
