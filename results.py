@@ -10,14 +10,43 @@ import DecisionTree as dt
 from collections import Counter
 import matplotlib.pyplot as plt
 
+data_name = ('mushrooms', 'senate', 'connect4')[2]
+depth_and_clssfr_limit = 3
+include_tree = True
+
+global_dict = {
+    'mushrooms': {
+        'directory': 'Data/mushrooms.csv',
+        'save to': 'Data/Mushrooms/results/' + str(depth_and_clssfr_limit) + '_depth.csv',
+        'X range': range(1, 23),
+        'y range': 0,
+        'train size': 1000
+    },
+    'connect4': {
+        'directory': 'Data/Connect4/connect-4.csv',
+        'save to': 'Data/Connect4/results/' + str(depth_and_clssfr_limit) + '_depth.csv',
+        'X range': range(0, 42),
+        'y range': 42,
+        'train size': 1000
+    },
+    'senate': {
+        'directory': 'Data/house_votes.csv',
+        'save to': 'Data/Senate/results/' + str(depth_and_clssfr_limit) + '_depth.csv',
+        'X range': range(1, 16),
+        'y range': 0,
+        'train size': 180
+    }
+}
+
 print('***********************************************************')
 '''
 set up data
 '''
-data = pa.read_csv('Data/Connect4/connect-4.csv')
-X = data.iloc[:,range(0,42)].values
-y = data.iloc[:,42].values.flatten()
-y = np.array([x if x == "win" else "loss" for x in y])
+data = pa.read_csv(global_dict[data_name]['directory'])
+X = data.iloc[:, global_dict[data_name]['X range']].values
+y = data.iloc[:, global_dict[data_name]['y range']].values.flatten()
+if data_name == 'con4':
+    y = np.array([x if x == "win" else "loss" for x in y])
 
 '''
 Helper function definitions
@@ -87,7 +116,7 @@ def runTree(X_train,y_train,X_test,y_test, d):
 
 
 #tree tests
-iterations = 10
+iterations = depth_and_clssfr_limit
 i_depth = range(1,iterations+1)
 
 t_train = list()
@@ -96,10 +125,6 @@ t_depth = list()
 
 b_train = list()
 b_test = list()
-
-#########################
-include_tree = True  ####
-#########################
 
 for i in i_depth:
     print(i)
@@ -110,7 +135,7 @@ for i in i_depth:
     b_te = list()
     for j in range(3):
         indices = range(0, len(y))
-        trainSize = 10000  # ALTER SIZE OF TRAINING SET HERE
+        trainSize = global_dict[data_name]['train size']  # ALTER SIZE OF TRAINING SET IN GLOBAL_DICT
         train_indices = np.random.choice(indices, trainSize, replace=False)
         test_indices = np.setdiff1d(indices, train_indices, assume_unique=True)
 
@@ -143,4 +168,4 @@ if not include_tree:
 else:
     res = {'tree train err': t_train, 'tree test err': t_test, 'Tree Depth': t_depth, 'Boost class num':i_depth, 'boost train err': b_train, 'boost test err': b_test}
 df = pa.DataFrame(data = res, index = i_depth)
-df.to_csv('Data/Connect4/results.csv')
+df.to_csv(global_dict[data_name]['save to'])
