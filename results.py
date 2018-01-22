@@ -2,7 +2,6 @@
 use for testing of AdaBoost class
 '''
 
-
 import AdaBoost as ab
 import numpy as np
 import pandas as pa
@@ -12,28 +11,32 @@ import matplotlib.pyplot as plt
 
 data_name = ('mushrooms', 'senate', 'connect4')[2]
 depth_and_clssfr_limit = 3
+optional_savefilename_extension = ""  # if you don't want it to overwrite a file with the same data and depth conditions
 include_tree = True
 
 global_dict = {
     'mushrooms': {
-        'directory': 'Data/mushrooms.csv',
-        'save to': 'Data/Mushrooms/results/' + str(depth_and_clssfr_limit) + '_depth.csv',
-        'X range': range(1, 23),
-        'y range': 0,
+        'directory' : 'Data/mushrooms.csv',
+        'save to'   : 'Data/Mushrooms/results/' + str(depth_and_clssfr_limit) +
+                      '_depth' + 'optional_savefilename_extension' + '.csv',
+        'X range'   : range(1, 23),
+        'y range'   : 0,
         'train size': 1000
     },
-    'connect4': {
-        'directory': 'Data/Connect4/connect-4.csv',
-        'save to': 'Data/Connect4/results/' + str(depth_and_clssfr_limit) + '_depth.csv',
-        'X range': range(0, 42),
-        'y range': 42,
+    'connect4' : {
+        'directory' : 'Data/Connect4/connect-4.csv',
+        'save to'   : 'Data/Connect4/results/' + str(depth_and_clssfr_limit) +
+                      '_depth' + 'optional_savefilename_extension' + '.csv',
+        'X range'   : range(0, 42),
+        'y range'   : 42,
         'train size': 1000
     },
-    'senate': {
-        'directory': 'Data/house_votes.csv',
-        'save to': 'Data/Senate/results/' + str(depth_and_clssfr_limit) + '_depth.csv',
-        'X range': range(1, 16),
-        'y range': 0,
+    'senate'   : {
+        'directory' : 'Data/house_votes.csv',
+        'save to'   : 'Data/Senate/results/' + str(depth_and_clssfr_limit) +
+                      '_depth' + 'optional_savefilename_extension' + '.csv',
+        'X range'   : range(1, 16),
+        'y range'   : 0,
         'train size': 180
     }
 }
@@ -53,21 +56,23 @@ Helper function definitions
 '''
 
 
-def runBoost(X_train, y_train, X_test, y_test, numClassifiers = 10):
+def runBoost(X_train, y_train, X_test, y_test, numClassifiers=10):
     '''
     initialize AdaBoost
     '''
 
     boost = ab.AdaBoost()
-    boost.train(X_train,y_train,numClassifiers=numClassifiers)
+    boost.train(X_train, y_train, numClassifiers=numClassifiers)
 
-    #test with training data
+    # test with training data
     pred_boost_train = boost.predict(X_train)
-    error_rate_boost_train = (sum([0 if pred == true else 1 for (pred, true) in zip(y_train, pred_boost_train)]) / float(len(y_train)))
+    error_rate_boost_train = (
+            sum([0 if pred == true else 1 for (pred, true) in zip(y_train, pred_boost_train)]) / float(len(y_train)))
 
-    #now test with remaining data
+    # now test with remaining data
     pred_boost_test = boost.predict(X_test)
-    error_rate_boost_test = (sum([0 if pred == true else 1 for (pred, true) in zip(y_test, pred_boost_test)]) / float(len(y_test)))
+    error_rate_boost_test = (
+            sum([0 if pred == true else 1 for (pred, true) in zip(y_test, pred_boost_test)]) / float(len(y_test)))
 
     '''
     Add prints for diagnostics and results here:
@@ -87,23 +92,25 @@ def runBoost(X_train, y_train, X_test, y_test, numClassifiers = 10):
 
     return error_rate_boost_train, error_rate_boost_test
 
-def runTree(X_train,y_train,X_test,y_test, d):
 
+def runTree(X_train, y_train, X_test, y_test, d):
     '''
     initialize Decision Tree
     '''
 
-    #now for decision tree
+    # now for decision tree
     tree = dt.DecisionTree()
-    tree.fitTree(X_train,y_train, max_depth=d) #calling fitTree without maxDepth argument sets max depth to 999
+    tree.fitTree(X_train, y_train, max_depth=d)  # calling fitTree without maxDepth argument sets max depth to 999
 
-    #test on training set
+    # test on training set
     pred_tree_train = tree.predict(X_train)
-    error_rate_tree_train = (sum([0 if pred == true else 1 for (pred, true) in zip(y_train, pred_tree_train)]) / float(len(y_train)))
+    error_rate_tree_train = (
+            sum([0 if pred == true else 1 for (pred, true) in zip(y_train, pred_tree_train)]) / float(len(y_train)))
 
-    #test on test set
+    # test on test set
     pred_tree_test = tree.predict(X_test)
-    error_rate_tree_test = (sum([0 if pred == true else 1 for (pred, true) in zip(y_test, pred_tree_test)]) / float(len(y_test)))
+    error_rate_tree_test = (
+            sum([0 if pred == true else 1 for (pred, true) in zip(y_test, pred_tree_test)]) / float(len(y_test)))
 
     '''print('')
     print('***** RESULTS DECISION TREE *****')
@@ -112,12 +119,12 @@ def runTree(X_train,y_train,X_test,y_test, d):
     print('')
     print('Training Error: ', error_rate_tree_train)
     print('Test Error    : ', error_rate_tree_test)'''
-    return error_rate_tree_train,error_rate_tree_test,tree.depth
+    return error_rate_tree_train, error_rate_tree_test, tree.depth
 
 
-#tree tests
+# tree tests
 iterations = depth_and_clssfr_limit
-i_depth = range(1,iterations+1)
+i_depth = range(1, iterations + 1)
 
 t_train = list()
 t_test = list()
@@ -145,8 +152,8 @@ for i in i_depth:
         y_te = y[test_indices]
 
         if include_tree:
-            tr,te,d = runTree(X_tr,y_tr,X_te,y_te,i)
-        btr,bte = runBoost(X_tr,y_tr,X_te,y_te,i)
+            tr, te, d = runTree(X_tr, y_tr, X_te, y_te, i)
+        btr, bte = runBoost(X_tr, y_tr, X_te, y_te, i)
         if include_tree:
             t_tr.append(tr)
             t_te.append(te)
@@ -160,12 +167,12 @@ for i in i_depth:
     b_train.append(np.mean(b_tr))
     b_test.append(np.mean(b_te))
 
-
 print('Storing Results')
 res = None
 if not include_tree:
-    res = {'Boost class num':i_depth, 'boost train err': b_train, 'boost test err': b_test}
+    res = {'Boost class num': i_depth, 'boost train err': b_train, 'boost test err': b_test}
 else:
-    res = {'tree train err': t_train, 'tree test err': t_test, 'Tree Depth': t_depth, 'Boost class num':i_depth, 'boost train err': b_train, 'boost test err': b_test}
-df = pa.DataFrame(data = res, index = i_depth)
+    res = {'tree train err' : t_train, 'tree test err': t_test, 'Tree Depth': t_depth, 'Boost class num': i_depth,
+           'boost train err': b_train, 'boost test err': b_test}
+df = pa.DataFrame(data=res, index=i_depth)
 df.to_csv(global_dict[data_name]['save to'])
