@@ -43,7 +43,7 @@ def runBoost(X_train, y_train, X_test, y_test, numClassifiers = 10):
     '''
     Add prints for diagnostics and results here:
     '''
-    print('')
+    '''print('')
     print('***** RESULTS ADABOOST *****')
     decisions = [c.root.splitCriteria for c in boost.classifiers]
     print('Decision Criteria per trees used: ', decisions)
@@ -54,9 +54,9 @@ def runBoost(X_train, y_train, X_test, y_test, numClassifiers = 10):
     print('')
 
     print('Training Error: ', error_rate_boost_train)
-    print('Test Error    : ', error_rate_boost_test)
+    print('Test Error    : ', error_rate_boost_test)'''
 
-    return error_rate_boost_train,error_rate_boost_test
+    return error_rate_boost_train, error_rate_boost_test
 
 def runTree(X_train,y_train,X_test,y_test, d):
 
@@ -76,18 +76,18 @@ def runTree(X_train,y_train,X_test,y_test, d):
     pred_tree_test = tree.predict(X_test)
     error_rate_tree_test = (sum([0 if pred == true else 1 for (pred, true) in zip(y_test, pred_tree_test)]) / float(len(y_test)))
 
-    print('')
+    '''print('')
     print('***** RESULTS DECISION TREE *****')
     print('Depth: ', tree.depth)
 
     print('')
     print('Training Error: ', error_rate_tree_train)
-    print('Test Error    : ', error_rate_tree_test)
+    print('Test Error    : ', error_rate_tree_test)'''
     return error_rate_tree_train,error_rate_tree_test,tree.depth
 
 
 #tree tests
-iterations = 100
+iterations = 10
 i_depth = range(1,iterations+1)
 
 t_train = list()
@@ -97,6 +97,9 @@ t_depth = list()
 b_train = list()
 b_test = list()
 
+#########################
+include_tree = True  ####
+#########################
 
 for i in i_depth:
     print(i)
@@ -116,22 +119,28 @@ for i in i_depth:
         X_te = X[test_indices]
         y_te = y[test_indices]
 
-
-        tr,te,d = runTree(X_tr,y_tr,X_te,y_te,i)
+        if include_tree:
+            tr,te,d = runTree(X_tr,y_tr,X_te,y_te,i)
         btr,bte = runBoost(X_tr,y_tr,X_te,y_te,i)
-        t_tr.append(tr)
-        t_te.append(te)
-        t_de.append(d)
+        if include_tree:
+            t_tr.append(tr)
+            t_te.append(te)
+            t_de.append(d)
         b_tr.append(btr)
         b_te.append(bte)
-    t_train.append(np.mean(t_tr))
-    t_test.append(np.mean(t_te))
-    t_depth.append(np.mean(t_de))
+    if include_tree:
+        t_train.append(np.mean(t_tr))
+        t_test.append(np.mean(t_te))
+        t_depth.append(np.mean(t_de))
     b_train.append(np.mean(b_tr))
     b_test.append(np.mean(b_te))
 
 
 print('Storing Results')
-res = {'tree train err': t_train, 'tree test err': t_test, 'Tree Depth': t_depth, 'Boost class num':i_depth, 'boost train err': b_train, 'boost test err': b_test}
+res = None
+if not include_tree:
+    res = {'Boost class num':i_depth, 'boost train err': b_train, 'boost test err': b_test}
+else:
+    res = {'tree train err': t_train, 'tree test err': t_test, 'Tree Depth': t_depth, 'Boost class num':i_depth, 'boost train err': b_train, 'boost test err': b_test}
 df = pa.DataFrame(data = res, index = i_depth)
-df.to_csv('Data/Mushrooms/results.csv')
+df.to_csv('Data/Connect4/results.csv')
