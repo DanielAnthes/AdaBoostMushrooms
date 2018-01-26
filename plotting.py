@@ -4,20 +4,20 @@ import pandas as pa
 
 data_name = ('mush', 'senate', 'con4')[2]
 depth_and_clssfr_limit = 300
-optional_savefilename_extension = ""
+optional_savefilename_extension = "_avg10"
 
 global_dict = {
     'mush'  : {
         'directory': 'Data/Mushrooms/results/' + str(depth_and_clssfr_limit) +
-                     '_depth' + 'optional_savefilename_extension' + '.csv'
+                     '_depth' + optional_savefilename_extension + '.csv'
     },
     'con4'  : {
         'directory': 'Data/Connect4/results/' + str(depth_and_clssfr_limit) +
-                     '_depth' + 'optional_savefilename_extension' + '.csv'
+                     '_depth' + optional_savefilename_extension + '.csv'
     },
     'senate': {
         'directory': 'Data/Senate/results/' + str(depth_and_clssfr_limit) +
-                     '_depth' + 'optional_savefilename_extension' + '.csv'
+                     '_depth' + optional_savefilename_extension + '.csv'
     }
 }
 

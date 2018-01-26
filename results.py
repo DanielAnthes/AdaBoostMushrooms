@@ -2,7 +2,7 @@
 use for testing of AdaBoost class
 '''
 
-import AdaBoost as ab
+import Boost as ab
 import numpy as np
 import pandas as pa
 import DecisionTree as dt
@@ -10,15 +10,16 @@ from collections import Counter
 import matplotlib.pyplot as plt
 
 data_name = ('mushrooms', 'senate', 'connect4')[2]
-depth_and_clssfr_limit = 3
-optional_savefilename_extension = ""  # if you don't want it to overwrite a file with the same data and depth conditions
+depth_and_clssfr_limit = 100
+optional_savefilename_extension = "_avg10_tree"  # if you don't want it to overwrite a file with the same data and depth conditions
 include_tree = True
+include_boost = False
 
 global_dict = {
     'mushrooms': {
         'directory' : 'Data/mushrooms.csv',
         'save to'   : 'Data/Mushrooms/results/' + str(depth_and_clssfr_limit) +
-                      '_depth' + 'optional_savefilename_extension' + '.csv',
+                      '_depth' + optional_savefilename_extension + '.csv',
         'X range'   : range(1, 23),
         'y range'   : 0,
         'train size': 1000
@@ -26,7 +27,7 @@ global_dict = {
     'connect4' : {
         'directory' : 'Data/Connect4/connect-4.csv',
         'save to'   : 'Data/Connect4/results/' + str(depth_and_clssfr_limit) +
-                      '_depth' + 'optional_savefilename_extension' + '.csv',
+                      '_depth' + optional_savefilename_extension + '.csv',
         'X range'   : range(0, 42),
         'y range'   : 42,
         'train size': 1000
@@ -34,7 +35,7 @@ global_dict = {
     'senate'   : {
         'directory' : 'Data/house_votes.csv',
         'save to'   : 'Data/Senate/results/' + str(depth_and_clssfr_limit) +
-                      '_depth' + 'optional_savefilename_extension' + '.csv',
+                      '_depth' + optional_savefilename_extension + '.csv',
         'X range'   : range(1, 16),
         'y range'   : 0,
         'train size': 180
@@ -48,7 +49,7 @@ set up data
 data = pa.read_csv(global_dict[data_name]['directory'])
 X = data.iloc[:, global_dict[data_name]['X range']].values
 y = data.iloc[:, global_dict[data_name]['y range']].values.flatten()
-if data_name == 'con4':
+if data_name == 'connect4':
     y = np.array([x if x == "win" else "loss" for x in y])
 
 '''
@@ -61,8 +62,8 @@ def runBoost(X_train, y_train, X_test, y_test, numClassifiers=10):
     initialize AdaBoost
     '''
 
-    boost = ab.AdaBoost()
-    boost.train(X_train, y_train, numClassifiers=numClassifiers)
+    boost = ab.Boost()
+    boost.train(X_train, y_train, cNum=numClassifiers)
 
     # test with training data
     pred_boost_train = boost.predict(X_train)
@@ -125,6 +126,7 @@ def runTree(X_train, y_train, X_test, y_test, d):
 # tree tests
 iterations = depth_and_clssfr_limit
 i_depth = range(1, iterations + 1)
+#i_depth = [x if not x == 35 else 36 for x in i_depth]
 
 t_train = list()
 t_test = list()
@@ -140,7 +142,7 @@ for i in i_depth:
     t_de = list()
     b_tr = list()
     b_te = list()
-    for j in range(3):
+    for j in range(10):
         indices = range(0, len(y))
         trainSize = global_dict[data_name]['train size']  # ALTER SIZE OF TRAINING SET IN GLOBAL_DICT
         train_indices = np.random.choice(indices, trainSize, replace=False)
@@ -153,24 +155,29 @@ for i in i_depth:
 
         if include_tree:
             tr, te, d = runTree(X_tr, y_tr, X_te, y_te, i)
-        btr, bte = runBoost(X_tr, y_tr, X_te, y_te, i)
+        if include_boost:
+            btr, bte = runBoost(X_tr, y_tr, X_te, y_te, i)
         if include_tree:
             t_tr.append(tr)
             t_te.append(te)
             t_de.append(d)
-        b_tr.append(btr)
-        b_te.append(bte)
+        if include_boost:
+            b_tr.append(btr)
+            b_te.append(bte)
     if include_tree:
         t_train.append(np.mean(t_tr))
         t_test.append(np.mean(t_te))
         t_depth.append(np.mean(t_de))
-    b_train.append(np.mean(b_tr))
-    b_test.append(np.mean(b_te))
+    if include_boost:
+        b_train.append(np.mean(b_tr))
+        b_test.append(np.mean(b_te))
 
 print('Storing Results')
 res = None
-if not include_tree:
+if not include_tree and include_boost:
     res = {'Boost class num': i_depth, 'boost train err': b_train, 'boost test err': b_test}
+elif include_tree and not include_boost:
+    res = {'tree train err': t_train, 'tree test err': t_test, 'Tree Depth': t_depth}
 else:
     res = {'tree train err' : t_train, 'tree test err': t_test, 'Tree Depth': t_depth, 'Boost class num': i_depth,
            'boost train err': b_train, 'boost test err': b_test}
