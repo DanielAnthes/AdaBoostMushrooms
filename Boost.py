@@ -4,11 +4,14 @@ import pandas as pa
 import math
 from collections import Counter
 
+EXCLUDE_DUPLICATES = False
+
 class Boost:
     def __init__(self):
         self.classifiers = list()
         self.csf_weights = list()
         self.classes = None #use to store class names for conversion to -1,1
+        self.exclude = {}
 
     def train(self,X,y,cNum,verbose=False):
         #TODO add early stopping if no more improvement is achieved for more classifiers
@@ -18,6 +21,9 @@ class Boost:
         length = len(X)
         indices = range(length)
         w = np.ones(length)/float(length)
+
+        for i in range(X.shape[1]):
+            self.exclude.update({i: []})
 
         for i in range(cNum):
             if verbose:
@@ -29,7 +35,15 @@ class Boost:
             #train classifier
             #cl = dt.DecisionTree()
             #cl.fitTree(sampleX,sampley,1)
-            cl = Stump(sampleX,sampley)
+            cl = Stump(sampleX,sampley, self.exclude)
+
+            # stuff that's supposed to limit all stopping criteria to 1 each
+            if cl.is_empty_stump():
+                break
+            if EXCLUDE_DUPLICATES:
+                split_attr, split_val = cl.get_split_criterion()
+                self.exclude[split_attr] = self.exclude[split_attr] + [split_val]
+
             #predictions on whole data set
             pred = cl.predict(X)
             #calculate error on entire data, weigh each error by weight of its datapoint
@@ -75,8 +89,11 @@ class Boost:
                 return p_class
 
 class Stump:
-    def __init__(self,X,y):
+    def __init__(self,X,y, exclude):
         self.root = Node()
+        self.exclude = exclude
+        self.empty_stump = False
+        self.split_criterion = None
 
         y_unique = np.unique(y)
         if len(y_unique) == 1:
@@ -94,6 +111,7 @@ class Stump:
                     classes_left.append(y[i])
                 else:
                     classes_right.append(y[i])
+
             left_counts = Counter(classes_left)
             self.root.left = Node()
             self.root.left.classification = left_counts.most_common(1)[0][0]
@@ -116,11 +134,15 @@ class Stump:
         num_entries, num_attr = X.shape
         best_split = (None, None, 1)  # holds column, value to be split on and current lowest Gini
         # loop over all attributes
-        for i in range(0, num_attr):
+        empty_stump = True
+        for i in range(num_attr):
             currentBest = (None, None, 1)  # holds column, value to be split on and gini
             attr = X[:, i]  # single out relevant column
             unique = np.unique(attr)  # get unique values of attribute, split on each
+            excl_vals = self.exclude[i]
+            unique = [x for x in unique if x not in excl_vals]
             for u in unique:
+                empty_stump = False
                 # get indices on condition
                 left_indices = list()
                 right_indices = list()
@@ -142,7 +164,19 @@ class Stump:
             if best_split[2] > currentBest[2]:
                 best_split = currentBest
 
+        if empty_stump:
+            self.empty_stump = True
+        self.split_criterion = (best_split[0], best_split[1])
         return (best_split[0], best_split[1])  # returns column and value to be split on
+
+    def is_empty_stump(self):
+        return self.empty_stump
+
+    def get_split_criterion(self):
+        return self.split_criterion
+
+    def get_exclude(self):
+        return self.exclude
 
     def predict(self, element):
         #add support for classification of multiple elements at once

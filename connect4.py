@@ -5,7 +5,7 @@ import DecisionTree as dt
 from collections import Counter
 import matplotlib.pyplot as plt
 
-data = pa.read_csv('Data/connect-4.csv')
+data = pa.read_csv('Data/Connect4/connect-4.csv')
 X = data.iloc[:,range(0,42)].values
 y = data.iloc[:,42].values.flatten()
 y = np.array([x if x == "win" else "loss" for x in y])
@@ -36,7 +36,7 @@ print("Test Error", p_test)
 print("Tree Depth: ", tree.depth)
 
 boost = ab.Boost()
-boost.train(X_train, y_train, cNum=1000,verbose=True)
+boost.train(X_train, y_train, cNum=15,verbose=True)
 pred_boost_train = boost.predict(X_train)
 pred_boost_test = boost.predict(X_test)
 error_rate_boost_test = (sum([0 if pred == true else 1 for (pred, true) in zip(y_test, pred_boost_test)]) / float(len(y_test)))
