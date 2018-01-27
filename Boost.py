@@ -84,6 +84,7 @@ class Boost:
                 return None
             else:
                 p_con = [-1 if pred == self.classes[0] else 1 for pred in p]
+                p_weighted = [w*p for w,p in zip(self.csf_weights,p_con)]
                 p_sum = sum(p_con)
                 p_class = (self.classes[0] if p_sum < 0 else self.classes[1])
                 return p_class
