@@ -2,18 +2,21 @@
 use for testing of AdaBoost class
 '''
 
-import Boost as ab
+import AdaBoost as ab
 import numpy as np
 import pandas as pa
 import DecisionTree as dt
+import re
 from collections import Counter
 import matplotlib.pyplot as plt
 
-data_name = ('mushrooms', 'senate', 'connect4')[2]
+data_name = ('mushrooms', 'senate', 'connect4')[1]
 depth_and_clssfr_limit = 100
-optional_savefilename_extension = "_avg10_tree"  # if you don't want it to overwrite a file with the same data and depth conditions
-include_tree = True
-include_boost = False
+step = 10
+save_as_trials_vector = True
+optional_savefilename_extension = ""  # if you don't want it to overwrite a file with the same data and depth conditions
+include_tree = False
+include_boost = True
 
 global_dict = {
     'mushrooms': {
@@ -30,7 +33,7 @@ global_dict = {
                       '_depth' + optional_savefilename_extension + '.csv',
         'X range'   : range(0, 42),
         'y range'   : 42,
-        'train size': 1000
+        'train size': 10000
     },
     'senate'   : {
         'directory' : 'Data/house_votes.csv',
@@ -38,7 +41,7 @@ global_dict = {
                       '_depth' + optional_savefilename_extension + '.csv',
         'X range'   : range(1, 16),
         'y range'   : 0,
-        'train size': 180
+        'train size': 100
     }
 }
 
@@ -125,7 +128,7 @@ def runTree(X_train, y_train, X_test, y_test, d):
 
 # tree tests
 iterations = depth_and_clssfr_limit
-i_depth = range(1, iterations + 1)
+i_depth = range(1, iterations + 1, step)
 #i_depth = [x if not x == 35 else 36 for x in i_depth]
 
 t_train = list()
@@ -164,13 +167,23 @@ for i in i_depth:
         if include_boost:
             b_tr.append(btr)
             b_te.append(bte)
-    if include_tree:
-        t_train.append(np.mean(t_tr))
-        t_test.append(np.mean(t_te))
-        t_depth.append(np.mean(t_de))
-    if include_boost:
-        b_train.append(np.mean(b_tr))
-        b_test.append(np.mean(b_te))
+
+    if save_as_trials_vector:
+        if include_tree:
+            t_train.append(re.sub('[ ]', '', str(t_tr)).strip('[]'))
+            t_test.append(re.sub('[ ]', '', str(t_te)).strip('[]'))
+            t_depth.append(re.sub('[ ]', '', str(t_de)).strip('[]'))
+        if include_boost:
+            b_train.append(re.sub('[ ]', '', str(b_tr)).strip('[]'))
+            b_test.append(re.sub('[ ]', '', str(b_te)).strip('[]'))
+    else:
+        if include_tree:
+            t_train.append(np.mean(t_tr))
+            t_test.append(np.mean(t_te))
+            t_depth.append(np.mean(t_de))
+        if include_boost:
+            b_train.append(np.mean(b_tr))
+            b_test.append(np.mean(b_te))
 
 print('Storing Results')
 res = None
