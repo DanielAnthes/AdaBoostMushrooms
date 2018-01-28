@@ -1,4 +1,4 @@
-import Boost as ab
+import AdaBoost as ab
 import numpy as np
 import pandas as pa
 import DecisionTree as dt

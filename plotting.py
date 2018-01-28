@@ -3,8 +3,8 @@ import numpy as np
 import pandas as pa
 
 data_name = ('mush', 'senate', 'con4')[2]
-depth_and_clssfr_limit = 300
-optional_savefilename_extension = "_avg10"
+depth_and_clssfr_limit = 100
+optional_savefilename_extension = "_avg5_step5"
 
 global_dict = {
     'mush'  : {
